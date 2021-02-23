@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.night.appinfo.mapper.dev.appinfo.AppInfoDao">
+    <update id="updateAppStatus">
+        UPDATE appinfodb.app_info SET app_info.`status` = #{status} WHERE app_info.`id` = #{id}
+    </update>
+
+    <select id="queryAllApp" resultType="appInfo" parameterType="appInfo">
+        SELECT
+            info.*,
+            dictionary_flatform.valueName AS flatformName,
+            dictionary_status.valueName AS statusName,
+            level1.categoryName AS categoryName1,
+            level2.categoryName AS categoryName2,
+            level3.categoryName AS categoryName3,
+            version.versionNo AS versionName
+        FROM
+            app_info AS info
+            LEFT JOIN
+            data_dictionary AS dictionary_flatform
+            ON
+            info.flatformId = dictionary_flatform.valueId AND
+            dictionary_flatform.typeCode = 'APP_FLATFORM'
+            LEFT JOIN
+            data_dictionary AS dictionary_status
+            ON
+            info.`status` = dictionary_status.valueId AND
+            dictionary_status.typeCode = 'APP_STATUS'
+            LEFT JOIN
+            app_category AS level1
+            ON
+            info.categoryLevel1 = level1.id
+            LEFT JOIN
+            app_category AS level2
+            ON
+            info.categoryLevel2 = level2.id
+            LEFT JOIN
+            app_category AS level3
+            ON
+            info.categoryLevel3 = level3.id
+            LEFT JOIN
+            app_version AS version
+            ON
+            info.versionId = version.id
+        <where>
+            <if test="appInfo.softwareName!=null and appInfo.softwareName!=''">
+                and softwareName like #{appInfo.softwareName}
+            </if>
+            <if test="appInfo.status != null and appInfo.status!=0">
+                and info.status =#{appInfo.status}
+            </if>
+            <if test="appInfo.flatformId != null and appInfo.flatformId!=0">
+                and info.flatformId =#{appInfo.flatformId}
+            </if>
+            <if test="appInfo.categoryLevel1 != null and appInfo.categoryLevel1!=0">
+                and info.categoryLevel1 =#{appInfo.categoryLevel1}
+            </if>
+            <if test="appInfo.categoryLevel2 != null and appInfo.categoryLevel2!=0">
+                and info.categoryLevel1 =#{appInfo.categoryLevel1}
+            </if>
+            <if test="appInfo.categoryLevel3 != null and appInfo.categoryLevel3!=0">
+                and info.categoryLevel1 =#{appInfo.categoryLevel1}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryAppCategoryByParentId" resultType="appCategory">
+        SELECT * from appinfodb.app_category
+        <where>
+            <if test="parentId == null">
+                parentId IS NULL
+            </if>
+            <if test="parentId != null">
+                parentId=#{parentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryDataDictionaryByTypeCode" resultType="com.night.appinfo.entity.DataDictionary">
+        SELECT * from appinfodb.data_dictionary where typeCode=#{typeCode}
+    </select>
+
+    <select id="queryAppStatus" resultType="com.night.appinfo.pojo.AppStatus">
+        SELECT
+            info.id,
+            info.`status`,
+            dictionary.valueName AS statusName
+        FROM
+            app_info AS info
+                LEFT JOIN
+            data_dictionary AS dictionary
+            ON
+                info.`status` = dictionary.valueId AND
+                dictionary.typeCode = 'APP_STATUS'
+        WHERE
+            info.id = ${id}
+    </select>
+
+    <select id="queryAppInfoByApkName" resultType="com.night.appinfo.entity.AppInfo">
+        SELECT
+            info.id,
+            info.softwareName
+        FROM
+            app_info AS info
+        WHERE
+            info.APKName = #{apkName}
+    </select>
+</mapper>

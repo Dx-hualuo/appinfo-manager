@@ -1,0 +1,41 @@
+Complete:
+    VIEW    /dev/user/toLogin
+    VIEW    /dev/user/login
+    VIEW    /dev/user/logout
+    VIEW    /dev/appInfo
+    VIEW    /dev/appInfo/add
+    VIEW    /dev/appInfo/add/save(
+
+    )
+    JSON:GET    /dev/appInfo/levelList(Long fatherId)
+        data{
+            data: List<AppCategory> 父Id下的子分类
+        }
+    JSON:GET    /dev/appInfo/saleStatusChange/{appId}
+        data{
+            errorCode:
+                0               成功
+                exception000001 系统异常
+                param000001     参数错误
+            message:
+                success         成功
+                failed          失败
+        }
+    JSON:GET    /dev/appInfo/ApkName/exist?name=[name]
+        data{
+            message:
+                empty   ApkName为空
+                exist   ApkName已存在
+                noexist ApkName不存在
+        }
+    JSON    /dev/appInfo/dataDictionary/{typeCode}
+        data{
+            data: List<DataDictionary> 符合条件的数据字典结果
+        }
+TODO:
+    VIEW    /dev/appInfo/version/add/{appId}
+    VIEW    /dev/appInfo/version/modify?versionId=[versionId]]&appId=[appId]
+    VIEW    /dev/appInfo/modify/{appId}
+    VIEW    /dev/appInfo/view/{appId}
+    JSON    /dev/appInfo/delete/{appId}
+
